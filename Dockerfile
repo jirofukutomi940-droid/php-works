@@ -18,3 +18,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
 
 # mod_rewrite を有効化（Laravel のルーティングに必要）
 RUN a2enmod rewrite
+# アプリケーションのコードをイメージに含める（ローカルでは compose のボリュームで上書きされる）
+WORKDIR /var/www/html
+COPY ./src /var/www/html
+RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction; fi \
+  && chown -R www-data:www-data /var/www/html
